@@ -14,8 +14,8 @@
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
-    "no-unused-vars": ["warn"],
     "no-prototype-builtins": ["off"],
-    "no-useless-escape": ["off"]
+    "no-useless-escape": ["off"],
+    "no-unused-vars": ["off"]
   }
 }

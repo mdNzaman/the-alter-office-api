@@ -1,0 +1,1 @@
+find . \( -name node_modules -o -name docs -o -name scripts -o -name coverage \) -prune -o -name '*.js*' ! -name "*.swp" -print | xargs -I % sh -c './node_modules/prettier/bin-prettier.js --config ./.prettierrc --write %; git add %'
