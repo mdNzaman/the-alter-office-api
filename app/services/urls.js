@@ -58,7 +58,6 @@ const createShortUrl = async (params) => {
   response.data.short_url = {};
   response.data.short_url.short_url = shortUrl;
   response.data.short_url.created_at = url.created_at;
-  ß;
 
   return response;
 };
