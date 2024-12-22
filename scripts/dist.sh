@@ -30,7 +30,7 @@ do
   rm "$file".bak
 done
 
-./node_modules/pkg/lib-es5/bin.js server.js --config package.json --out-path ./dist
+./node_modules/pkg/lib-es5/bin.js server.js --config package.json --out-path ./dist --target node16-linux-arm64
 
 for file in "${environment_files[@]}"
 do
