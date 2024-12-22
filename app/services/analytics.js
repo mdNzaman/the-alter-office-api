@@ -17,6 +17,10 @@ const getAllAnaltyics = async (params) => {
 
   let analytics = await analyticsModel.getAllAnaltyics(analyticsParams);
 
+  if (analytics) {
+    delete analytics.urls;
+  }
+
   let response = status.getStatus('success');
   response.data = {};
   response.data.analytics = {};
@@ -60,6 +64,17 @@ const getAnaltyics = async (params) => {
   params.topic ? (analyticsParams.topic = params.topic) : null;
 
   let analytics = await analyticsModel.getAnaltyics(analyticsParams);
+
+  if (analytics && params.alias) {
+    delete analytics.totalUrls;
+    delete analytics.urls;
+  }
+
+  if (analytics && params.topic) {
+    delete analytics.totalUrls;
+    delete analytics.osType;
+    delete analytics.deviceType;
+  }
 
   let response = status.getStatus('success');
   response.data = {};

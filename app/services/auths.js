@@ -55,7 +55,7 @@ const socialLogin = async (params) => {
 
     let userId = await usersModel.createUser(userParams);
     if (!userId) {
-      throw new Error(result);
+      throw new Error(userId);
     }
 
     userParams = {};

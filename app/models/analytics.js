@@ -82,7 +82,7 @@ const getAnaltyics = async (params) => {
     return null;
   }
 
-  return results[0];
+  return results;
 };
 
 const _collateAnalytics = (analytics) => {
