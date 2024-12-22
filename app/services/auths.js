@@ -29,7 +29,7 @@ const createAuthenticationRequest = async (params) => {
   authenticationRequestParams = {};
   authenticationRequestParams.authenticationRequestId = authenticationRequestId;
 
-  let authenticationRequest = (await authsModel.getAuthenticationRequests(_authenticationRequestParams))[0];
+  (await authsModel.getAuthenticationRequests(authenticationRequestParams))[0];
 
   let oauthMiddleware = passport.authenticate('google', {scope: config.OAUTH['GOOGLE'].SCOPE});
   return oauthMiddleware;
