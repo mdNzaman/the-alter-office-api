@@ -43,19 +43,22 @@ CREATE TABLE url_alias (
 
 CREATE TABLE analytics (
   id INT NOT NULL AUTO_INCREMENT,
-  url_id INT NOT NULL,
+  user_id INT NOT NULL,
+  url_alias_id INT NOT NULL,
   ip_address VARCHAR(100) NULL,
   user_agent VARCHAR(100) NOT NULL,
   os_type VARCHAR(100) NULL,
-  device_type VARCHAR(100) NULL,,
+  device_type VARCHAR(100) NULL,
   active BOOL NOT NULL DEFAULT TRUE,
   created_at DATETIME NOT NULL DEFAULT NOW(),
   updated_at DATETIME NULL,
   deleted_at DATETIME NULL,
   PRIMARY KEY(id),
-  FOREIGN KEY(url_id) REFERENCES urls(id),
+  FOREIGN KEY(url_alias_id) REFERENCES url_alias(id),
+  FOREIGN KEY(user_id) REFERENCES users(id),
   UNIQUE INDEX urls_id(id) USING HASH,
-  INDEX urls_url_id(url_id) USING HASH
+  INDEX urls_url_alias_id(url_alias_id) USING HASH,
+  INDEX urls_user_id(user_id) USING HASH
 );
 
 CREATE TABLE origins (
