@@ -1,0 +1,157 @@
+'use strict';
+
+// Include core libraries
+const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+
+!fs.existsSync(`${__dirname}/node_modules/app`) ? fs.symlinkSync(`${__dirname}/app`, `${__dirname}/node_modules/app`) : null;
+const healthchecks = require('app/services/healthchecks');
+
+const app = express();
+
+// Include config files
+const config = require('app/configs/config');
+const status = require('app/configs/status');
+const loggerConfig = require('app/configs/logger');
+
+const isDeveloping = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+
+app.disable('x-powered-by');
+
+// Include middleware
+const authsMiddleware = require('app/middlewares/auths');
+
+// Include routers
+const healthchecksRouter = require('app/routes/healthchecks');
+const authsRouter = require('app/routes/auths');
+const urlsRouter = require('app/routes/urls');
+const analyticsRouter = require('app/routes/analytics');
+
+// Use JSON body parser
+app.use(
+  bodyParser.json({
+    limit: 1024102420
+  })
+);
+
+app.use(
+  bodyParser.urlencoded({
+    limit: 1024102420,
+    extended: true
+  })
+);
+
+// DB connectivity check
+const dbSelfCheck = async () => {
+  let dbSelfCheckQuery = config.knex.select(config.knex.raw('now()'));
+
+  try {
+    await dbSelfCheckQuery;
+    console.log('Connected to MySQL DB...');
+  } catch (e) {
+    console.log('MySQL connection error', e);
+  }
+};
+dbSelfCheck();
+
+// Set allowed headers
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Authorization,User-Agent,X-Auth,X-Version,X-Identifier,X-Platform,X-Origin');
+
+  if (isDeveloping) {
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  next();
+});
+
+// Healthcheck routes
+healthchecks.init();
+app.use('/healthchecks', healthchecksRouter);
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
+// Use custom log format
+app.use(loggerConfig.customLogFormat);
+
+// Stream logs on screen for non-production
+if (isDeveloping) {
+  app.use(loggerConfig.devLogStream);
+}
+
+// Configure session middleware
+app.use(
+  session({
+    secret: config.AUTH.SECRET_KEY,
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Google OAuth Strategy
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: config.OAUTH.GOOGLE.CLIENT_ID,
+      clientSecret: config.OAUTH.GOOGLE.CLIENT_SECRET,
+      callbackURL: config.OAUTH.GOOGLE.CALLBACK_URL
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Process user profile data
+      // console.log('Google Profile:', profile);
+      done(null, profile);
+    }
+  )
+);
+
+// Serialize and Deserialize User
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+// Use middleware
+app.use(authsMiddleware);
+
+// Start Google Authentication
+app.get('/auths/google', passport.authenticate('google', {scope: config.OAUTH['GOOGLE'].SCOPE}));
+
+// Routes
+app.use('/api/auths', authsRouter);
+app.use('/api/shorten', urlsRouter);
+app.use('/api/analytics', analyticsRouter);
+
+// Catch 404s
+app.use((req, res, next) => {
+  res.statusCode = 404;
+  res.json(status.getStatus('url_missing'));
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  if (err) {
+    console.log(new Date().toISOString(), err);
+  }
+
+  if (err.hasOwnProperty('error')) {
+    res.json(err);
+  } else {
+    let err = status.getStatus('generic_fail');
+    res.json(err);
+  }
+});
+
+app.listen(config.SERVER_PORT, config.SERVER_IP, () => {
+  console.log(`########## Environment: ${process.env.NODE_ENV} ##########`);
+  console.log(`${new Date()}: Server running on port ${config.SERVER_PORT}...`);
+});
