@@ -94,12 +94,12 @@ Google Sign-In through the browser and use the retrieved token to authenticate r
     "data": {
         "user": {
             "id": 1,
-            "email": "nooruz.zaman@xane.ai",
+            "email": "nooruzzaman18@gmail.com",
             "active": 1
         },
         "session": {
             "id": 1,
-            "email": "nooruz.zaman@xane.ai",
+            "email": "nooruzzaman18@gmail.com",
             "token": "2e37d37c2df54a37b89a544290978509",
             "user_id": 1,
             "expiry": "2024-12-10T06:41:09.000Z",

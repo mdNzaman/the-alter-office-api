@@ -1,8 +1,7 @@
-DROP DATABASE IF EXISTS the_atler_office;
+DROP DATABASE IF EXISTS the_alter_office;
 
-CREATE DATABASE the_atler_office CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-USE the_atler_office;
+CREATE DATABASE the_alter_office CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE the_alter_office;
 
 DROP TABLE IF EXISTS
 users,
@@ -90,7 +89,6 @@ CREATE TABLE devices (
   platform_id INT NOT NULL,
   app_version INT NOT NULL,
   user_agent VARCHAR(256) NULL,
-  push_token VARCHAR(256) NULL,
   active BOOL NOT NULL DEFAULT TRUE,
   created_at DATETIME NOT NULL DEFAULT NOW(),
   updated_at DATETIME NULL,
