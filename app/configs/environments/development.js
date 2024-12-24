@@ -27,9 +27,9 @@ const HEALTHCHECKS = {
 
 const OAUTH = {
   GOOGLE: {
-    CLIENT_ID: '1076163857306-9v3lggevj2s3gvjfp9fg3f85pl4trhtk.apps.googleusercontent.com',
-    CLIENT_SECRET: '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',
-    CALLBACK_URL: 'http://localhost:3000/api/auths/verify/google', //`${HEALTHCHECKS.DEPLOY_BASE_URL}/api/auths/verify/google`,
+    CLIENT_ID: process.env.GOOGLE_CLIENT_ID || 'GOOGLE_CLIENT_ID',
+    CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || 'GOOGLE_CLIENT_SECRET',
+    CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback',
     SCOPE: ['profile', 'email']
   }
 };
